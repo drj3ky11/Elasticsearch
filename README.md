@@ -2,6 +2,12 @@
 
 Básicos de Elasticsearch, lucene, cluster... (ampliar) Cada shard es un Lucene, gestionan los indices.
 
+El docker-compose de [tres nodos](https://github.com/drj3ky11/Elasticsearch-course/blob/master/elk-3cluster.yml) inicial levanta tres elasticsearch, un cerebro para la gestión de nodos y kibana. Para ello hay que dar permisos chmod -R 777 a cada carpeta en la que están los volúmenes. También atento a editar:
+
+`systctl vm.max_map_count=262144`
+
+Que también se puede editar el sysctl.conf en /etc añadiendo vm.max_map_count=262144
+
 ## 1.Nodos
 
 **Ingesta**, mediante maping. A continuación la **Indexación** Para tener buenos resultados los índices tienen que estar en la RAM,durante la ingesta de lo que más tiraré será de la CPU. **Coordinación de la búsqueda** y por último **gestión del cluster.**  Estos serán los cuatro tipos de nodos que tendremos:
@@ -21,3 +27,7 @@ Las app irán contra un balanceador, este hablará con los nodos clientes, que a
 
 Los **nodos Data** son los que más RAM van a requerir. Garvage Colector, repasa la RAM, marca que puede borrar y en una segunda etapa los borra. No poner más de 32GB de lo que en Java se llama *heap.* Java es medio interpretado y medio no, se compila contra la máquina virtual de Java... Hay que controlar la memoria que se está consumiendo dentro de la mv de java, yo lo único que le puedo configurar es cuanta memoria le dejo a su disposición en el heap. 
 El **maestro** con 1GB le vale si no es muy exigente, entre 1 y 4 se moverá siempre. En cuanto a los nodos de ingesta lo mismo, lo que más consumirán estos será CPU. Los nodos **clientes** necesitan tanto RAM como CPU
+
+## 2. Práctica 1
+
+Levantamos el cluster [de 7 nodos](https://github.com/drj3ky11/Elasticsearch-course/blob/master/elk-cluster7node.yml) para ello hemos editado el docker compose de 3 nodos que teníamos anteriormente.
