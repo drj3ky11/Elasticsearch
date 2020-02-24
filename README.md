@@ -34,3 +34,16 @@ Levantamos el cluster [de 7 nodos](https://github.com/drj3ky11/Elasticsearch-cou
 
 Una vez levantados, en cerebro vemos con una estrella quíen es el máster, podemos tirarlo con `docker-compose stop es0*`y vemos quíen pasa a sustituirlo como máster. Para levantarlo de nuevo `docker-compose up -d es0*`
 
+Acudimos a las [documentación del módulo de nodos](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html). Nosotros queremos dos nodos que puedan ser maestro y un tercero que vote. Este último podrá dedicarse a otras labores pero tendrá la potestad de elegir maestro.
+
+`node.master: true`
+
+`node.voting_only: false`
+
+`node.data: false`
+
+`node.ingest: false` 
+
+`cluster.remote.connect: false`
+
+En la documentación vemos como hacer cada nodo especifico de una tarea
