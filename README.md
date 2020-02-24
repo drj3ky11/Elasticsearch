@@ -31,3 +31,6 @@ El **maestro** con 1GB le vale si no es muy exigente, entre 1 y 4 se moverá sie
 ## 2. Práctica 1
 
 Levantamos el cluster [de 7 nodos](https://github.com/drj3ky11/Elasticsearch-course/blob/master/elk-cluster7node.yml) para ello hemos editado el docker compose de 3 nodos que teníamos anteriormente.
+
+Una vez levantados, en cerebro vemos con una estrella quíen es el máster, podemos tirarlo con `docker-compose stop es0*`y vemos quíen pasa a sustituirlo como máster. Para levantarlo de nuevo `docker-compose up -d es0*`
+
