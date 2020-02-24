@@ -46,4 +46,9 @@ Acudimos a las [documentación del módulo de nodos](https://www.elastic.co/guid
 
 `cluster.remote.connect: false`
 
-En la documentación vemos como hacer cada nodo especifico de una tarea
+En la documentación vemos como hacer cada nodo especifico de una tarea.
+Vamos a configurar los nodos sin bajarlos, para ello entro 
+
+`sudo docker exect -it es01 /bin/bash`
+
+Entramos en /usr/share/elasticsearch y tenemos que ir a /config, para editar con vi elasticsearch.yml pero esto no es lo más limpio... mejor editar el docker-compose.yml
