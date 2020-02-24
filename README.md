@@ -1,5 +1,6 @@
 # Elasticsearch
 
+Vease la [Wiki](https://github.com/drj3ky11/Elasticsearch/wiki)
 Recomendable más de 10Gb de ram para el de 7 nodos. Desplegar en servidor virtualizado y docker.
 
 El primer [docker-compose de tres nodos](https://github.com/drj3ky11/Elasticsearch-course/blob/master/elk-3cluster.yml) inicial levanta tres elasticsearch, un cerebro para la gestión de nodos y kibana. Para ello hay que dar permisos chmod -R 777 a cada carpeta en la que están los volúmenes. También atento a editar:
