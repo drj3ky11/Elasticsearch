@@ -52,3 +52,6 @@ Vamos a configurar los nodos sin bajarlos, para ello entro
 `sudo docker exect -it es01 /bin/bash`
 
 Entramos en /usr/share/elasticsearch y tenemos que ir a /config, para editar con vi elasticsearch.yml pero esto no es lo más limpio... mejor editar el docker-compose.yml
+
+
+En este [docker-compose](https://github.com/drj3ky11/Elasticsearch-course/blob/master/nodes-clusterespecific.yml) seleccionamos el 1 y 2 como master elegibles, el tres también lo es pero lo que pretendo es que vote. Como data el 3 y 4, el 5 como ingest y el 6 y 7 como cliente
