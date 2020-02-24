@@ -155,6 +155,11 @@ services:
       - es01:elasticsearch1
       - es02:elasticsearch2
       - es03:elasticsearch3
+      - es04:elasticsearch4
+      - es05:elasticsearch5
+      - es06:elasticsearch6
+      - es07:elasticsearch7
+      
   kibana:
     image: docker.elastic.co/kibana/kibana:7.5.2
     container_name: kibana
