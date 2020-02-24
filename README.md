@@ -15,6 +15,9 @@ Sólo quiero un nodo como maestro, cuando levanto con docker lo que le paso son 
 
 La ingesta también la sacaremos independiente como nodo exclusivo.
 
-Las app irán contra un balanceador, este hablará con los nodos clientes, que a su vez hablarán con los de datos e ingesta. A parte estarán los maestro que hablarán con todos. Lo más importante es aislar los nodos de ingesta y de datos de la red publica. Interesa tres redes, hacia fuera, la interna y otra de gestión de cuota.
+Las app irán contra un balanceador, este hablará con los nodos clientes, que a su vez hablarán con los de datos e ingesta. A parte estarán los maestro que hablarán con todos. Lo más importante es aislar los nodos de ingesta y de datos de la red publica. Interesa tres redes, hacia fuera, la interna y otra de gestión de cuota.Hablan por http, lo mejora https por lo evitar la suplantación. Para esto necesitamos certificados.
 
-Hablan por http, lo mejora https por lo evitar la suplantación. Para esto necesitamos certificados.
+## Gestión de memoria
+
+Los **nodos Data** son los que más RAM van a requerir. Garvage Colector, repasa la RAM, marca que puede borrar y en una segunda etapa los borra. No poner más de 32GB de lo que en Java se llama *heap.* Java es medio interpretado y medio no, se compila contra la máquina virtual de Java... Hay que controlar la memoria que se está consumiendo dentro de la mv de java, yo lo único que le puedo configurar es cuanta memoria le dejo a su disposición en el heap. 
+El **maestro** con 1GB le vale si no es muy exigente, entre 1 y 4 se moverá siempre. En cuanto a los nodos de ingesta lo mismo, lo que más consumirán estos será CPU. Los nodos **clientes** necesitan tanto RAM como CPU
