@@ -38,6 +38,7 @@ services:
 ##The volume where the certs are placed 
       - /home/dr/certs:/usr/share/elasticsearch/config/certificates
     ports:
+##The ports are going to increase from 9201 to 9207, just for the host
       - 9201:9200
     networks:
       - elastic
@@ -83,10 +84,10 @@ services:
     container_name: es03
     environment:
       - node.name=es03
-      - node.master=true 
-      - node.data=true 
+      - node.master=true ##It's a master, but it can't work as a master, go to vote only
+      - node.data=true ## Like it is not a master as the first two it can be a data one 
       - node.ingest=false
-      - node.voting_only=true
+      - node.voting_only=true ##It is the only one able to vote only
       - cluster.name=es-cluster
       - discovery.seed_hosts=es01,es02
       - cluster.initial_master_nodes=es01,es02,es03
@@ -268,6 +269,7 @@ services:
       - elastic
       
   cerebro:
+## Cerebro is going to show us the real state of the nodes, it's just for management tasks
     image: lmenezes/cerebro:0.8.5
     container_name: cerebro
     ports:
@@ -287,6 +289,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.5.2
     container_name: kibana
     environment:
+##Somme changes have to be done here, Kibana is not working due to certificates and so on 
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
       - xpack.license.self_generated.type=trial
       - ELASTICSEARCH.USERNAME=elastic
@@ -302,9 +305,12 @@ services:
     image: nginx:latest
     container_name: nginx
     volumes:
+##It is important to place in the folder the nginx.conf
+##I am not happy with this volume distribution, I would change it
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ${LOG_HOME}/nginx/error.log:/etc/nginx/error_log.log
     ports:
+##The 80 port also could be ok, I put 8080
       - 8080:80
     links:
       - es06
@@ -312,6 +318,7 @@ services:
     networks:
       - elastic
 volumes:
+## I would like to change it to put local folders, not use /var neither/usr/share
   data01:
     driver: local
     driver_opts:
