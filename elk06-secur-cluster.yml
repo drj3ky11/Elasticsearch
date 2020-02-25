@@ -1,20 +1,23 @@
 version: '2.2'
 services:
+##From es01 to es07 the elasticsearch nodes
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es01
     environment:
       - node.name=es01
+## Enviroment variables, they switch the node as a master
       - node.master=true 
       - node.data=false 
       - node.ingest=false
-      - node.voting_only=false
+      - node.voting_only=false ##This is not on the open source version 
       - cluster.name=es-cluster
       - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" ##RAM
       - ELASTIC_PASSWORD=*******
+##Security statements
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -32,6 +35,7 @@ services:
         hard: -1
     volumes:
       - data01:/usr/share/elasticsearch/data
+##The volume where the certs are placed 
       - /home/dr/certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9201:9200
