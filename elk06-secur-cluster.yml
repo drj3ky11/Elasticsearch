@@ -14,7 +14,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -51,7 +51,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -88,7 +88,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -125,7 +125,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -162,7 +162,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -200,7 +200,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -238,7 +238,7 @@ services:
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=tordo
+      - ELASTIC_PASSWORD=*******
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -283,7 +283,11 @@ services:
     image: docker.elastic.co/kibana/kibana:7.5.2
     container_name: kibana
     environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - xpack.license.self_generated.type=trial
+      - ELASTICSEARCH.USERNAME=elastic
+      - ELASTICSEARCH.PASSWORD=**********
+
     ports:
       - 5601:5601 
     networks:
