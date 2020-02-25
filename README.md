@@ -16,3 +16,5 @@ Una vez levantados, en cerebro vemos con una estrella quíen es el máster, pode
 
 
 [En este docker-compose](https://github.com/drj3ky11/Elasticsearch-course/blob/master/nodes-clusterespecific.yml) seleccionamos el **1 y 2 como master** elegibles, el tres también lo es pero lo que pretendo es que vote. Como **data** el 3 y 4, el 5 como **ingest** y el 6 y 7 como **cliente**
+
+El **elk04** levanta un ngix y el elk06 y en adelante tratan de la **securización del cluster**, ver la [wiki](https://github.com/drj3ky11/Elasticsearch/wiki/2.-Arquitectura-de-red-y-securizaci%C3%B3n)
