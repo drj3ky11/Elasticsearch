@@ -1,7 +1,7 @@
 version: '2.2'
 services:
 ##From es01 to es07 the elasticsearch nodes
-  es01:
+  es01: ##MASTER
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es01
     environment:
@@ -42,7 +42,7 @@ services:
       - 9201:9200
     networks:
       - elastic
-  es02:
+  es02: ##MASTER
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es02
     environment:
@@ -79,7 +79,7 @@ services:
       - 9202:9200
     networks:
       - elastic
-  es03:
+  es03: ##MASTER(fake) actually DATA
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es03
     environment:
@@ -116,7 +116,7 @@ services:
       - 9203:9200
     networks:
       - elastic     
-  es04:
+  es04: ##DATA
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es04
     environment:
@@ -153,7 +153,7 @@ services:
       - 9204:9200
     networks:
       - elastic  
-  es05:
+  es05: ##INGEST
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es05
     environment:
@@ -191,7 +191,7 @@ services:
     networks:
       - elastic 
       
-  es06:
+  es06: ##CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es06
     environment:
@@ -229,7 +229,7 @@ services:
     networks:
       - elastic   
   
-  es07:
+  es07: ##CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es07
     environment:
