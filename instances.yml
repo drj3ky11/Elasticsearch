@@ -2,6 +2,7 @@ instances:
   - name: es01
     dns:
       - es01
+      - elaticsearch01
       - localhost
     ip:
       - 127.0.0.1
@@ -9,41 +10,47 @@ instances:
   - name: es02
     dns:
       - es02
+      - elaticsearch02
       - localhost
     ip:
       - 127.0.0.1
 
   - name: es03
     dns:
-      - es01
+      - es03
+      - elaticsearch03
       - localhost
     ip:
       - 127.0.0.1
 
   - name: es04
     dns:
-      - es02
+      - es04
+      - elaticsearch04
       - localhost
     ip:
       - 127.0.0.1
         
   - name: es05
     dns:
-      - es02
+      - es05
+      - elaticsearch05
       - localhost
     ip:
       - 127.0.0.1
 
   - name: es06
     dns:
-      - es01 
+      - es06
+      - elaticsearch06
       - localhost
     ip:
       - 127.0.0.1
 
   - name: es07
     dns:
-      - es02
+      - es07
+      - elaticsearch07
       - localhost
     ip:
       - 127.0.0.1
