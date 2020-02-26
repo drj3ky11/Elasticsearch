@@ -1,0 +1,325 @@
+version: '2.2'
+services:
+##From es01 to es07 the elasticsearch nodes
+  es01: ##MASTER
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es01
+    environment:
+      - node.name=es01
+## Enviroment variables, they switch the node as a master
+      - node.master=true 
+      - node.data=false 
+      - node.ingest=false
+      - node.voting_only=false ##This is not on the open source version 
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m" ##RAM
+      - ELASTIC_PASSWORD=tordo
+##Security statements
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es01/es01.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es01/es01.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data01:/usr/share/elasticsearch/data
+##The volume where the certs are placed 
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+##The ports are going to increase from 9201 to 9207, just for the host
+      - 9201:9200
+    networks:
+      - elastic
+  es02: ##MASTER
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es02
+    environment:
+      - node.name=es02
+      - node.master=true 
+      - node.data=false 
+      - node.ingest=false
+      - node.voting_only=false
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es02/es02.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es02/es02.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es02/es02.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es02/es02.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data02:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9202:9200
+    networks:
+      - elastic
+  es03: ##MASTER(fake) actually DATA
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es03
+    environment:
+      - node.name=es03
+      - node.master=true ##It's a master, but it can't work as a master, go to vote only
+      - node.data=true ## Like it is not a master as the first two it can be a data one 
+      - node.ingest=false
+      - node.voting_only=true ##It is the only one able to vote only
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es03/es03.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es03/es03.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es03/es03.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data03:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9203:9200
+    networks:
+      - elastic     
+  es04: ##DATA
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es04
+    environment:
+      - node.name=es04
+      - node.master=false
+      - node.data=true 
+      - node.ingest=false
+      - node.voting_only=false
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es04/es04.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es04/es04.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es04/es04.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es04/es04.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data04:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9204:9200
+    networks:
+      - elastic  
+  es05: ##INGEST
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es05
+    environment:
+      - node.name=es05
+      - node.master=false
+      - node.data=false 
+      - node.ingest=true
+      - node.voting_only=false
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02, es03, es04
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es05/es05.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
+        #  - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es05/es05.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data05:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9205:9200
+    networks:
+      - elastic 
+      
+  es06: ##CLIENT
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es06
+    environment:
+      - node.name=es06
+      - node.master=false 
+      - node.data=false 
+      - node.ingest=false
+      - node.voting_only=false
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02, es03, es04, es05
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
+        # - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data06:/usr/share/elasticsearch/data 
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9206:9200
+    networks:
+      - elastic   
+  
+  es07: ##CLIENT
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es07
+    environment:
+      - node.name=es07
+      - node.master=false 
+      - node.data=false 
+      - node.ingest=false
+      - node.voting_only=false
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02, es03, es04, es05, es06
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_PASSWORD=tordo
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es07/es07.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es07/es07.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es07/es07.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es07/es07.key
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data07:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9207:9200
+    networks:
+      - elastic
+      
+  cerebro:
+## Cerebro is going to show us the real state of the nodes, it's just for management tasks
+    image: lmenezes/cerebro:0.8.5
+    container_name: cerebro
+    volumes:
+      - ./cerebro/conf/application.conf:/opt/cerebro/conf/application.conf
+      - ./cerebro/conf/ca/ca.crt:/opt/cerebro/conf/ca/ca.crt
+    ports:
+      - "9000:9000"
+    networks:
+      - elastic
+    external_links:
+            #      - es01:elasticsearch1
+            #  - es02:elasticsearch2
+            #  - es03:elasticsearch3
+            #  - es04:elasticsearch4
+            #  - es05:elasticsearch5
+      - es06:elasticsearch06
+      - es07:elasticsearch07
+      
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.2
+    container_name: kibana
+    environment:
+##Somme changes have to be done here, Kibana is not working due to certificates and so on 
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - xpack.license.self_generated.type=trial
+      - ELASTICSEARCH.USERNAME=elastic
+      - ELASTICSEARCH.PASSWORD=tordo
+
+    ports:
+      - 5601:5601 
+    networks:
+      - elastic
+    external_links:
+      - es01:elasticsearch
+  nginx: 
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+##It is important to place in the folder the nginx.conf
+##I am not happy with this volume distribution, I would change it
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        #  - ${LOG_HOME}/nginx/error.log:/etc/nginx/error_log.log
+    ports:
+##The 80 port also could be ok, I put 8080
+      - 8080:80
+    links:
+      - es06
+      - es07
+    networks:
+      - elastic
+networks:
+  elastic:
+          driver: bridge
