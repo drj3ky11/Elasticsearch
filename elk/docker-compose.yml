@@ -175,7 +175,7 @@ services:
       - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es05/es05.key
       - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
-        #  - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
       - xpack.security.transport.ssl.verification_mode=certificate 
       - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
@@ -213,11 +213,12 @@ services:
       - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
       - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
-        # - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
       - xpack.security.transport.ssl.verification_mode=certificate 
       - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
       - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
+      - transport.bind_host=_eth0_
     ulimits:
       memlock:
         soft: -1
@@ -229,7 +230,7 @@ services:
       - 9206:9200
     networks:
       - elastic   
-  
+      - frontal
   es07: ##CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es07
@@ -256,7 +257,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es07/es07.crt
       - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es07/es07.key
-
+      - transport.bind_host=_eth0_
     ulimits:
       memlock:
         soft: -1
@@ -268,6 +269,7 @@ services:
       - 9207:9200
     networks:
       - elastic
+      - frontal
       
   cerebro:
 ## Cerebro is going to show us the real state of the nodes, it's just for management tasks
@@ -280,14 +282,13 @@ services:
     ports:
       - "9000:9000"
     networks:
-      - elastic
+      - frontal
     external_links:
             #  - es01:elasticsearch1
             #  - es02:elasticsearch2
             #  - es03:elasticsearch3
             #  - es04:elasticsearch4
             #  - es05:elasticsearch5
-            # IT HAS TO BE THE SAME NAME IN THE INSTANCES.YML APPLLICATION.CONF AND HERE...
       - es06:elasticsearch06
       - es07:elasticsearch07
       
@@ -304,7 +305,7 @@ services:
     ports:
       - 5601:5601 
     networks:
-      - elastic
+      - frontal
     external_links:
       - es01:elasticsearch
   nginx: 
@@ -321,7 +322,22 @@ services:
       - es06
       - es07
     networks:
-      - elastic
+      - frontal
+      - public 
 networks:
   elastic:
-          driver: bridge
+    ipam:      
+      driver: default
+      config:
+        - subnet: 10.10.0.0/8
+
+  frontal:
+    ipam: 
+      driver: default
+      config:
+        - subnet: 20.10.0.0/8
+  public:
+    ipam:
+      driver: default
+      config:
+        - subnet: 30.10.0.0/8 
