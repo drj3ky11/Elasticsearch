@@ -12,7 +12,7 @@ services:
       - node.ingest=false
       - node.voting_only=false ##This is not on the open source version 
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es02,es03
+      - discovery.seed_hosts=es02,es04,es03,es05,es06
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m" ##RAM
@@ -21,6 +21,7 @@ services:
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
+##It is necessary to link the volume where the certificates are
       - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
       - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es01/es01.crt
@@ -52,7 +53,7 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es03
+      - discovery.seed_hosts=es01,es04,es03,es05,es06
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
@@ -90,7 +91,7 @@ services:
       - node.voting_only=true ##It is the only one able to vote only
       - cluster.name=es-cluster
       - discovery.seed_hosts=es01,es02
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es04,es05,es06
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - ELASTIC_PASSWORD=tordo
@@ -126,7 +127,7 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02
+      - discovery.seed_hosts=es01,es02,es03,es05,es06
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
@@ -163,7 +164,7 @@ services:
       - node.ingest=true
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02, es03, es04
+      - discovery.seed_hosts=es01,es02,es04,es03,es06
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
@@ -272,6 +273,7 @@ services:
 ## Cerebro is going to show us the real state of the nodes, it's just for management tasks
     image: lmenezes/cerebro:0.8.5
     container_name: cerebro
+##Must to change in application.conf to security, extract it and link in a new volume
     volumes:
       - ./cerebro/conf/application.conf:/opt/cerebro/conf/application.conf
       - ./cerebro/conf/ca/ca.crt:/opt/cerebro/conf/ca/ca.crt
@@ -280,7 +282,7 @@ services:
     networks:
       - elastic
     external_links:
-            #      - es01:elasticsearch1
+            #  - es01:elasticsearch1
             #  - es02:elasticsearch2
             #  - es03:elasticsearch3
             #  - es04:elasticsearch4
@@ -309,7 +311,6 @@ services:
     container_name: nginx
     volumes:
 ##It is important to place in the folder the nginx.conf
-##I am not happy with this volume distribution, I would change it
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         #  - ${LOG_HOME}/nginx/error.log:/etc/nginx/error_log.log
     ports:
