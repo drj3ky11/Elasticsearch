@@ -287,6 +287,7 @@ services:
             #  - es03:elasticsearch3
             #  - es04:elasticsearch4
             #  - es05:elasticsearch5
+            # IT HAS TO BE THE SAME NAME IN THE INSTANCES.YML APPLLICATION.CONF AND HERE...
       - es06:elasticsearch06
       - es07:elasticsearch07
       
