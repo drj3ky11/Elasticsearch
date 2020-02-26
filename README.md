@@ -1,7 +1,7 @@
 # Elasticsearch
 
 Vease la [Wiki](https://github.com/drj3ky11/Elasticsearch/wiki)
-Recomendable más de 10Gb de ram para el de 7 nodos. Desplegar en servidor virtualizado y docker.
+Recomendable más de 10Gb de ram para el de 7 nodos. Desplegar en servidor virtualizado y docker. Recomendable también cambiar las contraseñas y usuarios que están por defecto.
 
 ## FASE FINAL: La carpeta elk
 En ella está toda la estructura necesaria para que levante los nodos y securizados.
