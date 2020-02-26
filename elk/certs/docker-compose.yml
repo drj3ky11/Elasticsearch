@@ -14,4 +14,4 @@ services:
       '
     user: "0"
     working_dir: /usr/share/elasticsearch
-    volumes: ['/home/drjekyll/Documentos/docker/elk/certs:/certs', '/home/drjekyll/Documentos/docker/elk/certs:/usr/share/elasticsearch/config/certificates']  
+    volumes: ['YOURPATH:/certs', 'YOURPATH:/usr/share/elasticsearch/config/certificates']  
