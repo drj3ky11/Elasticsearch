@@ -12,8 +12,9 @@ services:
       - node.ingest=false
       - node.voting_only=false ##This is not on the open source version 
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es02,es04,es03,es05,es06
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es02,es04,es03,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m" ##RAM
       - ELASTIC_PASSWORD=tordo
@@ -37,7 +38,7 @@ services:
     volumes:
       - ./elasticsearch/data/data01:/usr/share/elasticsearch/data
 ##The volume where the certs are placed 
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
 ##The ports are going to increase from 9201 to 9207, just for the host
       - 9201:9200
@@ -53,8 +54,9 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es04,es03,es05,es06
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es01,es04,es03,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - ELASTIC_PASSWORD=tordo
@@ -75,11 +77,12 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data02:/usr/share/elasticsearch/data
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9202:9200
     networks:
       - elastic
+
   es03: ##MASTER(fake) actually DATA
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es03
@@ -90,8 +93,9 @@ services:
       - node.ingest=false
       - node.voting_only=true ##It is the only one able to vote only
       - cluster.name=es-cluster
+      - cluster.remote.connect=false
       - discovery.seed_hosts=es01,es02
-      - cluster.initial_master_nodes=es01,es02,es04,es05,es06
+      - cluster.initial_master_nodes=es01,es02,es04,es05,es06,es07
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - ELASTIC_PASSWORD=tordo
@@ -112,11 +116,12 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data03:/usr/share/elasticsearch/data
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9203:9200
     networks:
       - elastic     
+
   es04: ##DATA
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es04
@@ -127,8 +132,9 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02,es03,es05,es06
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es01,es02,es03,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - ELASTIC_PASSWORD=tordo
@@ -149,11 +155,12 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data04:/usr/share/elasticsearch/data
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9204:9200
     networks:
       - elastic  
+
   es05: ##INGEST
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es05
@@ -164,8 +171,9 @@ services:
       - node.ingest=true
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02,es04,es03,es06
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es01,es02,es04,es03,es06,es07
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
       - ELASTIC_PASSWORD=tordo
@@ -186,7 +194,7 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data05:/usr/share/elasticsearch/data
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9205:9200
     networks:
@@ -202,10 +210,11 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02, es03, es04, es05
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es01,es02,es03,es04,es05,es07
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - ELASTIC_PASSWORD=tordo
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
@@ -225,12 +234,13 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data06:/usr/share/elasticsearch/data 
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9206:9200
     networks:
       - elastic   
       - frontal
+
   es07: ##CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es07
@@ -241,10 +251,11 @@ services:
       - node.ingest=false
       - node.voting_only=false
       - cluster.name=es-cluster
-      - discovery.seed_hosts=es01,es02, es03, es04, es05, es06
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.remote.connect=false
+      - discovery.seed_hosts=es01,es02,es03,es04,es05,es06
+      - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - ELASTIC_PASSWORD=tordo
       - xpack.license.self_generated.type=trial 
       - xpack.security.enabled=true
@@ -264,7 +275,7 @@ services:
         hard: -1
     volumes:
       - ./elasticsearch/data/data07:/usr/share/elasticsearch/data
-      - ./elasticsearch/config/certificates:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     ports:
       - 9207:9200
     networks:
@@ -278,7 +289,7 @@ services:
 ##Must to change in application.conf to security, extract it and link in a new volume
     volumes:
       - ./cerebro/conf/application.conf:/opt/cerebro/conf/application.conf
-      - ./cerebro/conf/ca/ca.crt:/opt/cerebro/conf/ca/ca.crt
+      - ./certs/ca/ca.crt:/opt/cerebro/conf/ca/ca.crt
     ports:
       - "9000:9000"
     networks:
@@ -297,17 +308,24 @@ services:
     container_name: kibana
     environment:
 ##Somme changes have to be done here, Kibana is not working due to certificates and so on 
-      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
-      - xpack.license.self_generated.type=trial
-      - ELASTICSEARCH.USERNAME=elastic
-      - ELASTICSEARCH.PASSWORD=tordo
-
+      - ELASTICSEARCH_HOSTS=https://es06:9200
+      - SERVER_NAME=kibana
+      - SERVER_HOST="0"
+      - SERVER_SSL_ENABLED=true
+      - ELASTICSEARCH_SSL_CERTIFICATESAUTHORITIES=/etc/kibana/config/certs/ca/ca.crt
+      - SERVER_SSL_KEY=/etc/kibana/config/certs/kibana/kibana.key
+      - SERVER_SSL_CERTIFICATE=/etc/kibana/config/certs/kibana/kibana.crt
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=tordo
+    volumes:
+      - ./certs:/etc/kibana/config/certs
     ports:
       - 5601:5601 
     networks:
       - frontal
     external_links:
-      - es01:elasticsearch
+      - es06:es06
+      - es07:es07  
   nginx: 
     image: nginx:latest
     container_name: nginx
@@ -321,23 +339,15 @@ services:
     links:
       - es06
       - es07
+      - cerebro
+      - kibana
     networks:
       - frontal
       - public 
 networks:
-  elastic:
-    ipam:      
-      driver: default
-      config:
-        - subnet: 10.10.0.0/8
-
+  elastic:      
+    driver: bridge
   frontal:
-    ipam: 
-      driver: default
-      config:
-        - subnet: 20.10.0.0/8
+    driver: bridge
   public:
-    ipam:
-      driver: default
-      config:
-        - subnet: 30.10.0.0/8 
+    driver: bridge 
