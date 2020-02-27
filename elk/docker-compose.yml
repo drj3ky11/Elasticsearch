@@ -345,7 +345,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.5.2
     container_name: kibana
     environment:
-  # Environment sintaxis could change among the versions 
+  # Environment sintaxis could change among versions 
       - SERVER_NAME=kibana
       - SERVER_HOST="0"
       - SERVER_SSL_ENABLED=true
