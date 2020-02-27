@@ -1,6 +1,6 @@
 version: '2.2'
 services:
-  es01:
+  es01: # MASTER
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es01
     environment:
@@ -9,14 +9,16 @@ services:
       - discovery.seed_hosts=es02,es03,es04,es05,es06,es07
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" #RAM management 
+   # Node configurations, master, data, ingest 
       - node.master=true
       - node.voting_only=false
       - node.data=false
       - node.ingest=false
       - cluster.remote.connect=false
-      - ELASTIC_PASSWORD=toor
-      - xpack.license.self_generated.type=trial
+      - ELASTIC_PASSWORD=toor # Change password 
+      - xpack.license.self_generated.type=trial # It allows to use parameters like voting only. Not OpenSource
+   # Security configurations 
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
       - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
@@ -33,6 +35,7 @@ services:
         soft: -1
         hard: -1
     volumes:
+   # One volume for data, an other one for certificates 
       - ./elasticsearch/data/data01:/usr/share/elasticsearch/data
       - ./certs:/usr/share/elasticsearch/config/certificates
         #  - ./repositories:/repositories
@@ -46,7 +49,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es02:
+  es02: # MASTER
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es02
     environment:
@@ -92,7 +95,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es03:
+  es03: # FAKE MASTER actually data
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es03
     environment:
@@ -102,8 +105,8 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - node.master=true
-      - node.voting_only=true
+      - node.master=true # Not elegible
+      - node.voting_only=true # his only task is to vote for a master
       - node.data=true
       - node.ingest=false
       - cluster.remote.connect=false
@@ -138,7 +141,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es04:
+  es04: # DATA
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es04
     environment:
@@ -184,7 +187,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es05:
+  es05: # INGEST
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es05
     environment:
@@ -228,7 +231,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es06:
+  es06: # CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es06
     environment:
@@ -255,7 +258,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
       - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
       - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
-      - transport.bind_host=_eth0_
+      - transport.bind_host=_eth0_ # Important config to separate networks, transport only in elastic network 
     ulimits:
       memlock:
         soft: -1
@@ -264,6 +267,7 @@ services:
       - ./elasticsearch/data/data06:/usr/share/elasticsearch/data
       - ./certs:/usr/share/elasticsearch/config/certificates
     networks:
+  # One for the others nodes, and an other to cerebro, Kibana, nginx...
       - elastic
       - frontal
     external_links:
@@ -274,7 +278,7 @@ services:
       - es05:es05
       - es06:es06
       - es07:es07
-  es07:
+  es07: # CLIENT
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: es07
     environment:
@@ -321,12 +325,14 @@ services:
       - es06:es06
       - es07:es07
  
-  cerebro:
+  cerebro: # Information about the nodes status 
     image: lmenezes/cerebro:0.8.5
     container_name: cerebro
     ports:
       - "9000:9000"
     volumes:
+  # Some changes have to be done in application.conf to enable secure connections,
+  # for this reason it is outside the container and modificated in othe volume
       - ./cerebro/conf/application.conf:/opt/cerebro/conf/application.conf
       - ./certs/ca:/opt/cerebro/conf/ca
     networks:
@@ -339,6 +345,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.5.2
     container_name: kibana
     environment:
+  # Environment sintaxis could change among the versions 
       - SERVER_NAME=kibana
       - SERVER_HOST="0"
       - SERVER_SSL_ENABLED=true
@@ -362,8 +369,10 @@ services:
     image: nginx:latest
     container_name: nginx
     volumes:
+  # Nginx conf has to be change in order to set connections 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
+  # I prefer 8080, but 80 also would be ok
       - 8080:80
     links:
       - es06
