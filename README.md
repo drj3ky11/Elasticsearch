@@ -18,4 +18,4 @@ When running in Ubuntu it would be necessary to set:
 
 `sysctl vm.max_map_count=262144`
 
-Also you can edit the sysctl.conf en /etc añadiendo vm.max_map_count=262144
+Also you can edit the sysctl.conf en /etc adding  vm.max_map_count=262144
