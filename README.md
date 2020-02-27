@@ -7,9 +7,9 @@ More than **10Gb of RAM**
 Change passwords and users for your own safety.
 
 ## FASE FINAL: elk folder 
-The final version, 7 nodes, cerebro, Kibana, nginx and https security. Also include folder structure
+The final version, 7 nodes, cerebro, Kibana, nginx and https security. Also includes folder structure
 
-... AND IT WORKS!!!
+... **AND IT WORKS!!!**
 
 ## Paso a paso
 Just the very first beginnings with the cluster
