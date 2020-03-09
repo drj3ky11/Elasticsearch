@@ -1,0 +1,13 @@
+PUT cities
+{
+        "mappings":{
+           "properties":{
+                "country":{"type":"text","fielddata":true},
+                "city":{"type":"text"},
+                "accentCity":{"type":"text"},
+                "region":{"type":"text"},
+                "population":{"type":"long","ignore_malformed":true,"null_value":0},
+                "location":{"type":"geo_point"}
+        }
+   }
+}
