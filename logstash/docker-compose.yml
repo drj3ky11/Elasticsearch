@@ -1,0 +1,411 @@
+version: '2.2'
+services:
+  es01: # MASTER
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es02,es03,es04,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m" #RAM management 
+   # Node configurations, master, data, ingest 
+      - node.master=true
+      - node.voting_only=false
+      - node.data=false
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor # Change password 
+      - xpack.license.self_generated.type=trial # It allows to use parameters like voting only. Not OpenSource
+   # Security configurations 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es01/es01.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es01/es01.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es01/es01.key
+        #  - path.repo=/repositories
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+   # One volume for data, an other one for certificates 
+      - ./elasticsearch/data/data01:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+        #  - ./repositories:/repositories
+    networks:
+      - elastic
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es02: # MASTER
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es03,es04,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=true
+      - node.voting_only=false
+      - node.data=false
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es02/es02.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es02/es02.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es02/es02.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es02/es02.key
+        # - path.repo=/repositories
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data02:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+        #  - ./repositories:/repositories
+    networks:
+      - elastic
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es03: # FAKE MASTER actually data
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02,es04,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=true # Not elegible
+      - node.voting_only=true # his only task is to vote for a master
+      - node.data=true
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es03/es03.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es03/es03.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es03/es03.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es03/es03.key
+        #  - path.repo=/repositories
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data03:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+        #   - ./repositories:/repositories
+    networks:
+      - elastic
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es04: # DATA
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es04
+    environment:
+      - node.name=es04
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02,es03,es05,es06,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=true
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es04/es04.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es04/es04.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es04/es04.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es04/es04.key
+        # - path.repo=/repositories
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data04:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+        # - ./repositories:/repositories
+    networks:
+      - elastic
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es05: # INGEST
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es05
+    environment:
+      - node.name=es05
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02,es03,es04,es06,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=false
+      - node.ingest=true
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es05/es05.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es05/es05.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es05/es05.key
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data05:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+    networks:
+      - elastic
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es06: # CLIENT
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es06
+    environment:
+      - node.name=es06
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02,es03,es04,es05,es07
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=false
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es06/es06.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es06/es06.key
+      - transport.bind_host=_eth0_ # Important config to separate networks, transport only in elastic network 
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data06:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+    networks:
+  # One for the others nodes, and an other to cerebro, Kibana, nginx...
+      - elastic
+      - frontal
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+  es07: # CLIENT
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es07
+    environment:
+      - node.name=es07
+      - cluster.name=es-cluster
+      - discovery.seed_hosts=es01,es02,es03,es04,es05,es06
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=false
+      - node.ingest=false
+      - cluster.remote.connect=false
+      - ELASTIC_PASSWORD=toor
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es07/es07.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es07/es07.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es07/es07.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es07/es07.key
+      - transport.bind_host=_eth0_
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/data/data07:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certificates
+    networks:
+      - elastic
+      - frontal
+    external_links:
+      - es01:es01
+      - es02:es02
+      - es03:es03
+      - es04:es04
+      - es05:es05
+      - es06:es06
+      - es07:es07
+ 
+  cerebro: # Information about the nodes status 
+    image: lmenezes/cerebro:0.8.5
+    container_name: cerebro
+    ports:
+      - "9000:9000"
+    volumes:
+  # Some changes have to be done in application.conf to enable secure connections,
+  # for this reason it is outside the container and modificated in othe volume
+      - ./cerebro/conf/application.conf:/opt/cerebro/conf/application.conf
+      - ./certs/ca:/opt/cerebro/conf/ca
+    networks:
+      - frontal
+    external_links:
+      - es06:elasticsearch06
+      - es07:elasticsearch07
+ 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.2
+    container_name: kibana
+    environment:
+  # Environment sintaxis could change among versions 
+      - SERVER_NAME=kibana
+      - SERVER_HOST="0"
+      - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_CERTIFICATE=/etc/kibana/config/certs/kibana/kibana.crt
+      - SERVER_SSL_KEY=/etc/kibana/config/certs/kibana/kibana.key
+      - ELASTICSEARCH_HOSTS=https://elasticsearch06:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=toor
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/etc/kibana/config/certs/ca/ca.crt
+    ports:
+      - 5601:5601
+    volumes:
+      - ./certs:/etc/kibana/config/certs
+    networks:
+      - frontal
+    external_links:
+      - es06:elasticsearch06
+      - es07:elasticsearch07
+ 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+  # Nginx conf has to be change in order to set connections 
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+  # I prefer 8080, but 80 also would be ok
+      - 8080:80 
+    links:
+      - es06
+      - es07
+      - kibana
+      - cerebro
+    networks:
+      - frontal
+      - publica
+
+  logstash:
+    image: logstash:7.6.1
+    container_name: logstash
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    volumes:
+  # Where the data is stored
+      - ./logstash/data:/etc/logstash/data
+  # In the pipelines we are going to tell how to charge the data
+      - ./logstash/pipelines:/etc/logstash/pipelines
+      - ./certs/ca/ca.crt:/etc/logstahs/certificates/ca/ca.crt
+    links:
+  # It is going only against the nginx, the balancer.
+      - nginx
+  # Telling to logstash to take the data as it is said in pipeline
+    command: logstash -f /etc/logstash/pipelines/cities-pipeline.conf
+    networks:
+      - frontal
+
+networks:
+  elastic:
+    driver: bridge
+  frontal:
+    driver: bridge
+  publica:
+    driver: bridge
