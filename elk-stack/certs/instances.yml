@@ -44,6 +44,7 @@ instances:
       - es06
       - elasticsearch06
       - localhost
+      - nginx
     ip:
       - 127.0.0.1
 
@@ -52,6 +53,7 @@ instances:
       - es07
       - elasticsearch07
       - localhost
+      - nginx
     ip:
       - 127.0.0.1
   - name: kibana
