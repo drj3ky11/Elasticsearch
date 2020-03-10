@@ -1,0 +1,69 @@
+instances:
+  - name: es01
+    dns:
+      - es01
+      - elasticsearch01
+      - localhost
+    ip:
+      - 127.0.0.1
+
+  - name: es02
+    dns:
+      - es02
+      - elasticsearch02
+      - localhost
+    ip:
+      - 127.0.0.1
+
+  - name: es03
+    dns:
+      - es03
+      - elasticsearch03
+      - localhost
+    ip:
+      - 127.0.0.1
+
+  - name: es04
+    dns:
+      - es04
+      - elasticsearch04
+      - localhost
+    ip:
+      - 127.0.0.1
+        
+  - name: es05
+    dns:
+      - es05
+      - elasticsearch05
+      - localhost
+    ip:
+      - 127.0.0.1
+
+  - name: es06
+    dns:
+      - es06
+      - elasticsearch06
+      - localhost
+    ip:
+      - 127.0.0.1
+
+  - name: es07
+    dns:
+      - es07
+      - elasticsearch07
+      - localhost
+    ip:
+      - 127.0.0.1
+  - name: kibana
+    dns:
+      - kibana
+      - localhost
+    ip:
+      - 127.0.0.1
+  
+  - name: logstash
+    dns:
+      - logstash
+      - localhost
+    ip:
+      - 127.0.0.1
